@@ -87,7 +87,7 @@ def tekst(poruka, boja, font, vel_font, y_kordinata):
     širina_font = font.size(poruka)[0]
     ekran.blit(tekst,[(širina - širina_font) //2, y_kordinata])
  
-#FUNKCIJE ZA SINGLEPLAYER MODE - algoritam vrednovanja mogućih poteza
+#FUNKCIJE ZA SINGLEPLAYER MODE - algoritam vrednovanja mogućih poteza - u izradi
 
 def bodovanje(dio, žeton):
     ploča2 = ploča.copy()
@@ -260,10 +260,10 @@ while  not game_exit:
 
             #PlayerP input - program igra         
             if runda == 1 and mode == 'SINGLEPLAYER' and gam_over == False:
-##                kol = random.randint(0, b_kol - 1)
-##                while not mogući_potez(ploča, kol):
-##                    kol = random.randint(0, b_kol - 1)
-                kol = odaberi(ploča, žeton2)
+                kol = random.randint(0, b_kol)
+                while not mogući_potez(ploča, kol):
+                    kol = random.randint(0, b_kol - 1)
+                #kol = odaberi(ploča, žeton2)
                 red = sljedeći_red(ploča, kol)      
                 novix = kol*vel + vel//2
                 grafika()
