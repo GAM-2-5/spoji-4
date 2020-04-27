@@ -66,38 +66,44 @@ def žeton(x,y):
         pygame.draw.circle(ekran, player1boja, [x, y], r)
     if runda == 1:
         pygame.draw.circle(ekran, player2boja, [x, y], r)
-def grafika(): #naredbe za grafiku
+def grafika():
     if not gam_over:
         ekran.fill(prazno_boja)
         žeton(x,y)
         print_ploča(ploča, vel)
-        pygame.display.update()    
-def kraj(): #kraj igre - napiše tko je pobjedio
-    ekran.fill(prazno_boja)
-    print_ploča(ploča, vel)
-    if runda == 0:
-        tekst('{} je pobjedi{}!'.format(player1, spol1), player1boja, None, 50, 50)
-    elif runda == 1 and mode == 'MULTIPLAYER':
-        tekst('{} je pobjedi{}!'.format(player2, spol2), player2boja, None, 50, 50)
-    elif runda == 1 and mode == 'SINGLEPLAYER':
-        tekst('Izgubi{} si! Više sreće drugi put. ;)'.format(spol1), player2boja, None, 50, 50)
-    pygame.display.update()
-    time.sleep(3)
-def tekst(poruka, boja, font, vel_font, y_kordinata): 
-    font = pygame.font.SysFont(font, vel_font)
+        pygame.display.update()
+def tekst(poruka, boja, vel_font, y_kordinata, sredina = True):
+    font = pygame.font.SysFont(None, vel_font)
     tekst = font.render(poruka, True, boja)
     širina_font = font.size(poruka)[0]
-    ekran.blit(tekst,[(širina - širina_font) //2, y_kordinata])
- 
+    if sredina == True:
+        x_kordinata = (širina - širina_font) //2
+    else :
+        x_kordinata = 30
+    ekran.blit(tekst,[x_kordinata, y_kordinata])  
+def tekst_kraj(poruka, boja):
+    vel_font = 50
+    y_kordinata = 50 
+    ekran.fill(prazno_boja)
+    print_ploča(ploča, vel)
+    tekst(poruka, boja, vel_font, y_kordinata)
+    pygame.display.update()
+    time.sleep(3)
+def tekst_početak():
+    ekran.fill(crna)
+    tekst('IGRA SPOJI 4', bijela, 50, 100)
+    tekst('koristite strelice (lijevo i desno) za odabir kolone', bijela, 30, 140, False)
+    tekst('koristite strelicu (dolje) da ubacite žeton', bijela, 30, 160, False)
+    pygame.display.update()
 #FUNKCIJE ZA SINGLEPLAYER MODE
-#odredi kolko 'vrijedi' dio ploče od 4 prazna ili puna mjesta 
+#odredi koliko 'vrijedi' dio ploče od 4 prazna ili puna mjesta 
 def bodovanje(ploča, dio, žeton, r=100, k=100):
     vr_dio = 0
     protivnik = žeton1
     if žeton == žeton1:
         protivnik = žeton2
     if dio.count(žeton) == 4:
-        vr_dio += 100
+        vr_dio += 1000
     elif dio.count(žeton) == 3 and dio.count(prazno) == 1:
         vr_dio += 15
     elif dio.count(žeton) == 2 and dio.count(prazno) == 2:
@@ -106,10 +112,6 @@ def bodovanje(ploča, dio, žeton, r=100, k=100):
         vr_dio -= 80
     elif dio.count(protivnik) == 2 and dio.count(prazno) == 2 and r==0:
         vr_dio -= 10
-    elif len(dio)== 5:
-        if dio.count(žeton1) == 0 and ploča[r-1][k] == prazno and  ploča [r-1][k+1] == prazno:
-                broj = dio.count(žeton)
-                vr_dio+= broj*5
     return vr_dio
 
 #ploču dijeli na djelove i zbroji njihove vrijednosti
@@ -141,11 +143,6 @@ def vrijednost_ploče(ploča, žeton):
         for k in range (2, b_kol):
             dio = [int(ploča[r+i][k-i]) for i in range (4)]
             vr += bodovanje(ploča, dio, žeton)
-##    #taktika 'sedmica'- naopako okrenuta 7
-##    for r in range (2, b_red-1):
-##        for k in range (1, b_kol-1):
-##            dio = [ploča[r][k],ploča[r][k+1],ploča[r][k+2],ploča[r-1][k+1],ploča[r-2][k+2]]
-##            vr+= bodovanje (ploča, dio, žeton, r, k)
     return vr
 #lista kolona koje nisu popunjene do kraja
 def moguće_kolone(ploča):
@@ -155,8 +152,7 @@ def moguće_kolone(ploča):
             m_kolone.append(kol)
     return m_kolone
 
-# --- MINIMAX ALGORITAM - pravilo odlučivanja koje se koristi u umjetnoj inteligenciji,teoriji igara, statistici i filozofiji
-# za minimiziranje mogućeg gubitka za najgori slučaj (maksimalni gubitak) scenarija. Kad se radi o dobitku, naziva se "maksimin" - za maksimiziranje minimalnog dobitka.
+#MINIMAX ALGORITAM
 def kraj_mogućnosti(ploča):
     if len(moguće_kolone(ploča)) == 0 or pobjeda(ploča, žeton1) or pobjeda(ploča,žeton2):
         return True
@@ -253,9 +249,7 @@ ekran = pygame.display.set_mode((širina, visina))
 pygame.display.set_caption('IGRA SPOJI 4')
 
 while  not game_exit:
-    ekran.fill(crna)
-    tekst('IGRA SPOJI 4', bijela, None, 50, 100)
-    pygame.display.update()
+    tekst_početak()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             game_exit = True
@@ -283,9 +277,10 @@ while  not game_exit:
                         if mogući_potez(ploča, kol):
                             red = sljedeći_red(ploča, kol)
                             potez(ploča, red, kol, žeton1)
+                            grafika()
                             if pobjeda(ploča, žeton1):
                                 gam_over = True
-                                kraj()
+                                tekst_kraj('{} je pobjedi{}!'.format(player1, spol1), player1boja)
                         else: runda -= 1
                     #Player2 input
                     if runda == 1 and mode == 'MULTIPLAYER':
@@ -293,17 +288,22 @@ while  not game_exit:
                         if mogući_potez(ploča, kol):
                             red = sljedeći_red(ploča, kol)
                             potez(ploča, red, kol, žeton2)
+                            grafika()
                             if pobjeda(ploča, žeton2):
                                 gam_over = True
-                                kraj()
+                                tekst_kraj('{} je pobjedi{}!'.format(player2, spol2), player2boja)
                         else: runda -= 1
+                    if len (moguće_kolone(ploča))== 0:
+                        gam_over = True
+                        tekst_kraj('Izjednačeno!', crna)
                     runda += 1
                     runda = runda % 2
-                if not gam_over: grafika()
+                grafika()
 
             #PlayerP input - program igra         
             if runda == 1 and mode == 'SINGLEPLAYER' and gam_over == False:
-                kol, vr = minimax(ploča, 3, True)
+##                kol, vr = minimax(ploča, 3, True)
+                kol = odaberi (ploča, žeton2)
                 red = sljedeći_red(ploča, kol)      
                 novix = kol*vel + vel//2
                 grafika()
@@ -316,11 +316,13 @@ while  not game_exit:
                     grafika()
                     time.sleep(0.3)    
                 potez(ploča, red, kol, žeton2)
-                grafika()
                 if pobjeda(ploča, žeton2):
                     gam_over = True
-                    kraj()            
+                    tekst_kraj('Izgubi{} si! Više sreće drugi put. ;)'.format(spol1), player2boja)            
                 runda += 1
                 runda = runda % 2
-                if not gam_over: grafika()
+                grafika()
+                if len (moguće_kolone(ploča))== 0:
+                    gam_over = True
+                    tekst_kraj('Izjednačeno!', crna)
 pygame.quit()
