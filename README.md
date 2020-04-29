@@ -1,7 +1,9 @@
-# spoji-4
-spoji 4 je dobro poznata igra za 2 igrača
---> grafička igra
---> mogućnost igranja u multiplayeru i singleplayeru
---> promjenjive postavke
+# Spoji-4
+Vjerujem da je spoji 4 svima dobro poznata igra; cilj je spojiti 4 žetona pvije vašeg protivnika.
+- ovo je grafička igra za jednog ili dva igrača
+- sve potrebne upute za igranje ćete vidjeti kada pokrenete igru
 
-POTREBNO JE IMATI PYGAME DA BISTE MOGLI IGRATI
+# VAŽNO!
+- instalirajte sve datoteke (readme.md nije potrebna) i sve stavite ih u isti folder
+- potrbno je imati instaliran PYGAME i NUMPY (i Python sa pip-om naravno)
+    to možete instalirati tako da odete u cmd i napišete "pip install pygame" tj. "pip install numpy"
