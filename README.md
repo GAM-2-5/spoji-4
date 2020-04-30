@@ -1,5 +1,5 @@
 # Spoji-4
-Vjerujem da je spoji 4 svima dobro poznata igra; cilj je spojiti 4 žetona pvije vašeg protivnika.
+Vjerujem da je spoji 4 svima dobro poznata igra; cilj je spojiti 4 žetona prije vašeg protivnika.
 - ovo je grafička igra za jednog ili dva igrača
 - sve potrebne upute za igranje ćete vidjeti kada pokrenete igru
 
