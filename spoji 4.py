@@ -77,40 +77,40 @@ def tekst(poruka, boja, vel_font, y_kordinata, sredina = True, x_kordinata = 50)
     ekran.blit(tekst,[x_kordinata, y_kordinata])
     
 def tekst_kraj(poruka, boja):
-    vel_font = 35
+    vel_font = font2
     y_kordinata = 50 
     ekran.fill(prazno_boja)
     print_ploča(ploča, vel)
     tekst(poruka, boja, vel_font, y_kordinata)
     pygame.display.update()
-    time.sleep(3)
+    time.sleep(4)
 
 def otvori_postavke(lokacija):
-    win1 = 0
-    win2 = 0
     ekran.fill(crna)
     pygame.draw.rect(ekran, siva , [100, 100, 500, 500])
-    pygame.draw.rect(ekran, crna , [130, 165, 2, 420])
-    pygame.draw.rect(ekran, crna , [130, 165, 450, 2])
-    tekst('POSTAVKE', crna, 20, 130, False, 130)
-    tekst('NAČIN IGRANJA:', crna, 20, 200)
-    tekst('IZBOR BOJA:', crna, 20, 310)
-    gumb (lokacija, 'spremi')
-    gumb (lokacija, 'SINGLEPLAYER', 30, False, 230)
-    gumb (lokacija, 'MULTIPLAYER', 30, False, 260)
-    gumb (lokacija, 'standardni', 30, False, 340)
-    gumb (lokacija, 'nemoguća misija', 30, False, 370)
-    gumb (lokacija, 'random', 30, False, 400)
+    pygame.draw.rect(ekran, crna , [130, 160, 2, 350])
+    pygame.draw.rect(ekran, crna , [130, 160, 440, 2])
+    pygame.draw.rect(ekran, crna , [130, 510, 442, 2])
+    pygame.draw.rect(ekran, crna , [570, 160, 2, 350])
+    tekst('POSTAVKE', crna, font2 - 10, 130, False, 130)
+    tekst('NAČIN IGRANJA:', crna, font2 - 10, 200)
+    tekst('IZBOR BOJA:', crna, font2 - 10, 310)
+    gumb (lokacija, 'spremi', font1)
+    gumb (lokacija, 'SINGLEPLAYER', font2, False, 230)
+    gumb (lokacija, 'MULTIPLAYER', font2, False, 260)
+    gumb (lokacija, 'standardni', font2, False, 340)
+    gumb (lokacija, 'nemoguća misija', font2, False, 370)
+    gumb (lokacija, 'random', font2, False, 400)
 
 def na_njemu (lokacija, poruka):
     (xg, yg, širinag, duljinag) = gumbovi[poruka]
     if xg <lokacija[0]< xg+širinag and yg <lokacija[1]< yg+duljinag:
         return True
     
-def gumb (lokacija, poruka, vel_font = 20, tipka = True , y = 0):
+def gumb (lokacija, poruka, vel_font, bijela_tipka = True , y = 0):
     font = pygame.font.SysFont('Arial', vel_font)
     veličina = font.size(poruka)
-    if tipka == True:
+    if bijela_tipka == True:
         (xg, yg, širinag, duljinag) = gumbovi[poruka]
         pygame.draw.rect(ekran, siva , [xg - 4, yg - 4 , širinag +8, duljinag+8])
         if na_njemu(lokacija, poruka):
@@ -132,10 +132,11 @@ def gumb (lokacija, poruka, vel_font = 20, tipka = True , y = 0):
         else:
             boja = bijela
         tekst(poruka, boja, vel_font, y)
+        return gumbovi[poruka]
 
 
 def početni_zaslon(lokacija):
-    vel_font = 25
+    vel_font = font1
     if na_njemu (lokacija,'pehar'):
         if mode == 'SINGLEPLAYER':
             tekst('pobjede: {}'.format(win1), player1boja, vel_font, 170, False)
@@ -151,52 +152,54 @@ def početni_zaslon(lokacija):
         tekst('to će resetirati trenutni rezultat', player2boja, vel_font - 5, 200, False)
     else:
         ekran.fill(crna)
-        tekst('IGRA SPOJI 4', bijela, vel_font + 20, 100)
-        tekst('dotaknite ikone za upute', siva, vel_font - 10, 400)
+        tekst('SPOJI 4', bijela, vel_font + 30, 100)
+        tekst('prijeđite preko ikona', siva, vel_font - 10, 400)
         ekran.blit(pehar_ikona,(gumbovi['pehar'][0],gumbovi['pehar'][1]))
         ekran.blit(upitnik_ikona,(gumbovi['upitnik'][0],gumbovi['upitnik'][1]))
         ekran.blit(postavke_ikona,(gumbovi['postavke'][0],gumbovi['postavke'][1]))
-        gumb (lokacija, 'IGRAJ')
+        gumb (lokacija, 'IGRAJ', font1)
     
 #NAREDBE ZA SINGLEPLAYER MODE 
-def bodovanje(ploča, dio, žeton, r=100):
+def bodovanje(dio, žeton):
     vr_dio = 0
     protivnik = žeton1
+    if žeton == žeton1:
+        protivnik = žeton2
     if dio.count(žeton) == 4:
         vr_dio += 1000
-    elif dio.count(žeton) == 3 and dio.count(prazno) == 1:
+    if dio.count(žeton) == 3 and dio.count(prazno) == 1:
         vr_dio += 15
-    elif dio.count(žeton) == 2 and dio.count(prazno) == 2:
+    if dio.count(žeton) == 2 and dio.count(prazno) == 2:
         vr_dio += 2
-    elif dio.count(protivnik) == 3 and dio.count(prazno) == 1:
-        vr_dio -= 80
-    elif dio.count(protivnik) == 2 and dio.count(prazno) == 2 and r==0:
+    if dio.count(protivnik) == 3 and dio.count(prazno) == 1:
+        vr_dio -= 70
+    elif dio.count(protivnik) == 2 and dio.count(prazno) == 2:
         vr_dio -= 10
     return vr_dio
 
 def vrijednost_ploče(ploča, žeton):
     vr = 0
-    centar = [ int(i) for i in list(ploča[:, b_kol//2])]
+    centar = [int(i) for i in list(ploča[:, b_kol//2])]
     u_centru = centar.count(žeton)
-    vr += 4*u_centru
+    vr += 3*u_centru
     for r in range (b_red):
-        jedan_red = [ int(i) for i in list(ploča[r, :])]
+        jedan_red = [int(i) for i in list(ploča[r, :])]
         for k in range (b_kol - 3):
             dio = jedan_red[k:k+4]
-            vr += bodovanje (ploča, dio, žeton, r)
+            vr += bodovanje (dio, žeton)
     for k in range (b_kol):
-        jedna_kol = [ int(i) for i in list(ploča[:, k])]
+        jedna_kol = [int(i) for i in list(ploča[:, k])]
         for r in range (b_red - 3):
-            dio = jedna_kol[r:r+4]
-            vr += bodovanje(ploča, dio, žeton)
+            dio = jedna_kol[r: r+4]
+            vr += bodovanje(dio, žeton)
     for r in range (b_red -3):
         for k in range (b_kol -3):
             dio = [int(ploča[r+i][k+i]) for i in range (4)]
-            vr += bodovanje(ploča, dio, žeton)
+            vr += bodovanje(dio, žeton)
     for r in range (b_red -3):
         for k in range (2, b_kol):
             dio = [int(ploča[r+i][k-i]) for i in range (4)]
-            vr += bodovanje(ploča, dio, žeton)
+            vr += bodovanje(dio, žeton)
     return vr
 
 def moguće_kolone(ploča):
@@ -213,14 +216,15 @@ def kraj_mogućnosti(ploča):
     
 def minimax(ploča, dubina,alpha, beta, maksimiziranje):
     m_kolone= moguće_kolone(ploča)
-    if kraj_mogućnosti(ploča):
-        if pobjeda(ploča, žeton2):
-            return (None, 1000000000)
-        if pobjeda (ploča, žeton1):
-            return (None, -1000000000)
-        else: return (None, 0)
-    if dubina == 0:
-        return (3, vrijednost_ploče(ploča, žeton2))
+    if kraj_mogućnosti or dubina == 0:
+        if kraj_mogućnosti(ploča):
+            if pobjeda(ploča, žeton2):
+                return (None, 1000000000)
+            if pobjeda (ploča, žeton1):
+                return (None, -1000000000)
+            else: return (None, 0)
+        if dubina == 0:
+            return (None, vrijednost_ploče(ploča, žeton2))
     if maksimiziranje:  
         vrijednost = - math.inf
         naj_kol= random.choice(m_kolone)
@@ -283,6 +287,8 @@ postavke = False
 prazno = 0
 win1 = 0
 win2 = 0
+font1= 25
+font2= 30
 ploča = napravi_ploču()
 
 mode = 'SINGLEPLAYER'
@@ -312,24 +318,26 @@ while  not game_exit:
                 gam_over = False
                 
             if postavke == True:
+                win1 = 0
+                win2 = 0
                 sve_boje =[crvena, žuta, plava, aqua, bijela, siva]
                 if na_njemu(lokacija, 'spremi'):
                     postavke = False
-                if 230<lokacija[1]<230+25:
+                if 230<lokacija[1]< 230+font2:
                     mode = 'SINGLEPLAYER'
-                if 260<lokacija[1]<260+25:
+                if 260<lokacija[1]<260+font2:
                     mode = 'MULTIPLAYER'
-                if 340<lokacija[1]<340+25:
+                if 340<lokacija[1]<340+font2:
                     colorpack = 'standardni'
                     ploča_boja = plava
                     player1boja = žuta
                     player2boja = crvena
-                if 370<lokacija[1]<370+25:
+                if 370<lokacija[1]<370+font2:
                     colorpack = 'nemoguća misija'
                     ploča_boja = siva
                     player1boja = crvena
                     player2boja = crvena
-                if 400<lokacija[1]<400+25:
+                if 400<lokacija[1]<400+font2:
                     colorpack = 'random'
                     ploča_boja = sve_boje.pop(random.randint(0,len(sve_boje)-1))
                     player1boja = sve_boje.pop(random.randint(0,len(sve_boje)-1))
@@ -341,7 +349,6 @@ while  not game_exit:
         if postavke and gam_over:
             otvori_postavke(lokacija)    
         pygame.display.update()
-        
     runda = random.randint(0,1)
     ploča = napravi_ploču()
     grafika()
@@ -372,7 +379,6 @@ while  not game_exit:
                                 gam_over = True
                                 win1 += 1
                         else: runda -= 1
-                        
                     #Player2 input
                     if runda == 1 and mode == 'MULTIPLAYER':
                         kol = x // vel
@@ -391,10 +397,9 @@ while  not game_exit:
                     runda += 1
                     runda = runda % 2
                 grafika()
-
             #Player program        
             if runda == 1 and mode == 'SINGLEPLAYER' and gam_over == False:
-                kol, vr = minimax(ploča, 4, -math.inf, math.inf, True) 
+                kol, vr = minimax(ploča, 2, -math.inf, math.inf, True) 
                 red = sljedeći_red(ploča, kol)      
                 novix = kol*vel + vel//2
                 grafika()
@@ -413,6 +418,7 @@ while  not game_exit:
                 if len (moguće_kolone(ploča))== 0:
                     tekst_kraj('Izjednačeno!', bijela)
                     gam_over = True
+                vr = 0
                 runda += 1
                 runda = runda % 2
                 grafika()
