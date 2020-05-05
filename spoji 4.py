@@ -374,8 +374,12 @@ while  not game_exit:
                             red = sljedeći_red(ploča, kol)
                             potez(ploča, red, kol, žeton1)
                             grafika()
-                            if pobjeda(ploča, žeton1):
+                            if pobjeda(ploča, žeton1) and mode == 'MULTIPLAYER':
                                 tekst_kraj('IGRAČ 1 je pobjedio!', player1boja)
+                                gam_over = True
+                                win1 += 1
+                            elif pobjeda(ploča, žeton1) and mode == 'SINGLEPLAYER':
+                                tekst_kraj('Pobijedio si - bravo kralju!', player1boja)
                                 gam_over = True
                                 win1 += 1
                         else: runda -= 1
